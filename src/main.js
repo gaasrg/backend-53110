@@ -1,4 +1,10 @@
+import express from 'express';
 import { promises as fs } from 'fs';
+
+const PORT = 4000;
+
+const app = express();
+app.use(express.json());
 
 class ProductManager {
     constructor(filePath) {
@@ -19,9 +25,10 @@ class ProductManager {
         await fs.writeFile(this.filePath, JSON.stringify(this.products));
     }
 
-    addProduct(product) {
-        const prod = this.products.find((prod) => prod.code === product.code);
+    async addProduct(product) {
+        await this.initialize();
 
+        const prod = this.products.find((prod) => prod.code === product.code);
         if (prod) {
             console.log("Producto encontrado");
         } else {
@@ -67,13 +74,14 @@ class ProductManager {
 }
 
 class Product {
-    constructor(title, description, price, code, stock, thumbnail) {
+    constructor(title, description, price, code, stock, thumbnail, categoria) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.code = code;
         this.stock = stock;
         this.thumbnail = thumbnail;
+        this.categoria = categoria;
         this.id = Product.incrementarId();
     }
 
@@ -90,36 +98,49 @@ class Product {
 const path = './productos.json';
 const productManager = new ProductManager(path);
 
-const addProduct = async (product) => {
-    await productManager.initialize();
-    productManager.addProduct(product);
-};
+app.get('/', (req, res) => {
+    res.send("Hola, buenos días");
+});
 
-const getProducts = async () => {
+app.get('/products', async (req, res) => {
     await productManager.initialize();
-    productManager.getProducts();
-};
+    const { categoria } = req.query;
 
-const getProductById = async (id) => {
+    if (categoria) {
+        const products = productManager.products.filter(prod => prod.categoria.toLowerCase() === categoria.toLowerCase());
+        res.send(products);
+    } else {
+        res.send(productManager.products);
+    }
+});
+
+
+app.get('/products/:id', async (req, res) => {
     await productManager.initialize();
-    productManager.getProductById(id);
-};
+    const prod = productManager.products.find(prod => prod.id === parseInt(req.params.id));
 
-const deleteProduct = async (id) => {
-    await productManager.initialize();
-    productManager.deleteProduct(id);
-};
+    if (prod) {
+        res.send(prod);
+    } else {
+        res.send("Producto no existente");
+    }
+});
 
-const product1 = new Product("Iphone", "14", 700, "A2632", 10, []);
-const product2 = new Product("Iphone", "14 Pro", 1000, "A2642", 10, []);
-const product3 = new Product("Iphone", "14 Pro Max", 1100, "A2652", 10, []);
+app.listen(PORT, () => {
+    console.log(`Server on port ${PORT}`);
+});
+
+
+const product1 = new Product("Iphone", "14", 700, "A2632", 10, [], "Smartphones");
+const product2 = new Product("Iphone", "14 Pro", 1000, "A2642", 10, [], "Smartphones");
+const product3 = new Product("MacBook", "M2", 1100, "A2652", 10, [], "Computadora");
+
 
 addProduct(product1);
 addProduct(product2);
 addProduct(product3);
 
-getProducts();
-
-getProductById(2);
-
-deleteProduct(4);
+async function addProduct(product) {
+    await productManager.initialize();
+    productManager.addProduct(product);
+}
