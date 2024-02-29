@@ -1,0 +1,37 @@
+{
+    "products": [
+        {
+            "title": "Iphone",
+            "description": "14 Pro",
+            "price": 1000,
+            "code": "A2642",
+            "stock": 10,
+            "thumbnail": [],
+            "categoria": "Smartphones",
+            "id": 1,
+            "status": true
+        },
+        {
+            "title": "Iphone",
+            "description": "14 Pro Max",
+            "price": 1200,
+            "code": "A2652",
+            "stock": 10,
+            "thumbnail": [],
+            "categoria": "Smartphones",
+            "id": 2,
+            "status": true
+        },
+        {
+            "title": "Iphone",
+            "description": "14 ",
+            "price": 900,
+            "code": "A2662",
+            "stock": 10,
+            "thumbnail": [],
+            "categoria": "Smartphones",
+            "id": 3,
+            "status": true
+        }
+    ]
+}
