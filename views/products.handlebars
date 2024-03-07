@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+</head>
+<body>
+    <h1>Productos</h1>
+    <ul id="productList">
+        {{#each products}}
+            <li>Title: {{this.title}}, Description: {{this.description}}, Price: {{this.price}}</li>
+        {{/each}}
+    </ul>
+    <form id="productForm" method="POST" action="/api/products">
+        <input type="text" id="title" name="title" placeholder="title">
+        <input type="text" id="description" name="description" placeholder="description">
+        <input type="text" id="price" name="price" placeholder="price">
+        <input type="text" id="thumbnail" name="thumbnail" placeholder="thumbnail">
+        <input type="text" id="code" name="code" placeholder="code">
+        <input type="text" id="stock" name="stock" placeholder="stock">
+        <input type="text" id="status" name="status" placeholder="status">
+
+        <button type="submit">Agregar Producto</button>
+    </form>
+<form id="deleteForm" method="POST" action="/api/products/:pid">
+    <input type="number" id="productId" name="pid" placeholder="ID del Producto a Eliminar">
+    <button type="submit">Eliminar Producto</button>
+</form>
+
+
+    <script>
+    document.getElementById('deleteForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var productId = document.getElementById('productId').value;
+        var url = '/api/products/' + productId;
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al eliminar el producto');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Producto eliminado con éxito');
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    });
+    </script>
+</body>
+</html>
